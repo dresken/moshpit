@@ -32,8 +32,10 @@ class DB {
         if (null === $this->mysqli) {
             $this->mysqli = new \mysqli($this->db_server, $this->db_user, $this->db_password, $this->db_name);
             if ($this->mysqli->connect_error) {
-                throw new Exception ('Connect Error (' . $this->mysqli->connect_errno . ') '
-                        . $this->mysqli->connect_error);
+                $errno=$this->mysqli->connect_errno;
+                $error=$this->mysqli->connect_error;
+                $this->mysqli = NULL;
+                throw new Exception ('Connect Error (' . $errno . ') '.$error);
             }
         }
         return $this->mysqli;
