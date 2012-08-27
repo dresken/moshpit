@@ -12,7 +12,7 @@ abstract class Bones extends \Connex\MoshHttp {
     private $isProd;
     private $db;
     private $forms;
-    private $protectedArea;
+    private $adminArea;
     
     public function __construct($titlebase='', $forceSSL=FALSE) {
         parent::__construct();
