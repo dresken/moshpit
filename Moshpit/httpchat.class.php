@@ -1,54 +1,106 @@
 <?php 
-/***
+/**
+ * Root class in any communication 
  * 
+ * @package MoshpitEngine
  */
-namespace Connex;
-
-abstract class MoshHttp {
-    private $code;
+namespace Moshpit;
+/**
+ * Root class in any communication. Constructs a channel to communicate on.
+ * 
+ * Destructor ensures a response is sent back to the client. 
+ * No need to explicitly send a response in an inherited class
+ * 
+ * @package MoshpitEngine
+ */
+abstract class HttpChat {
+    private $status;
     private $protocol;
     private $sent;
     private $headers;
     
-    public function __construct($code=200) {
-        $this->setCode($code);
+    /**
+     * 
+     * @param int $code
+     */
+    public function __construct($status=200) {
+        $this->setStatus($status);
         $this->setProtocol();
         $this->headers = array();
         $this->sent = false;
     }
     
+    /**
+     * Destructor ensure the response has been sent
+     */
     public function __destruct() {
+        //if we are closing down make sure we send
         $this->send();
     }
     
+    /**
+     * Send a response to the client. Can only be invoked once.
+     * 
+     * @return boolean
+     */
     final public function send() {
+        //you can only send a responce once
         if (!$this->sent) {
             $this->addHeaders($this->getProtocol() . ' ' . $this->getCode() . ' ' . $this->getCodeText());
             foreach($this->getHeaderss() as $header)
                 header($header);
             $this->outputContent();
-            $this->sent = true;
+            $this->sent = TRUE;
+            return TRUE;
         }
+        return FALSE;
     }
     
-    final protected function addHeaders($header) {
+    /**
+     * Add to response headers
+     * 
+     * @param type $header
+     */
+    final protected function addHeader($header) {
         $this->headers[] = $header;
     }
     
-    final protected function getHeaderss() {
+    /**
+     * Return header array
+     * 
+     * @return array
+     */
+    final protected function getHeader() {
         return $this->headers;
     }
     
+    /**
+     * outputs Contents part of request
+     * 
+     * should echo output
+     */
     abstract protected function outputContent(); 
     
-    final public function setCode($code) {
-        $this->code = $code;
+    /**
+     * 
+     * @param int $status
+     */
+    final public function setStatus($status) {
+        $this->status = $status;
     }
     
-    final public function getCode() {
-        return $this->code;
+    /**
+     * 
+     * @return int
+     */
+    final public function getStatus() {
+        return $this->status;
     }
     
+    /**
+     * 
+     * @param int|string $protocol
+     */
     final public function setProtocol($protocol=NULL) {
         if ($protocol===NULL)
             $this->protocol=(isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
@@ -66,11 +118,19 @@ abstract class MoshHttp {
             }
     }
     
+    /**
+     * 
+     * @return string
+     */
     final public function getProtocol() {
         return $this->protocol;
     }
     
-    
+    /**
+     * 
+     * @return string
+     * @throws Exception
+     */
     final public function getCodeText() {
         $code = $this->getCode();
         $protocol = $this->getProtocol();
