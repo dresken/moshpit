@@ -1,7 +1,7 @@
 <?php
 namespace Site;
 
-abstract class Bones extends \Connex\MoshHttp {
+abstract class Bones extends \Moshpit\HttpChat {
     private $url;
     private $menu;
     private $head;
