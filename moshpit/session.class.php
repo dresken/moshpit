@@ -1,5 +1,5 @@
 <?php
-namespace Site;
+namespace Moshpit;
 final class Session {
     public function __construct() {
         if (! session_id())

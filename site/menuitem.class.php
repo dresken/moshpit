@@ -46,7 +46,7 @@ class MenuItem {
     public function outputMenuItem() {
     ?>
         <li>
-            <a <?php echo Common::getValue($_SERVER, 'REDIRECT_URL', '')==$this->url?'class="selected_page"':'' ?> 
+            <a <?php echo \Moshpit\Common::getValue($_SERVER, 'REDIRECT_URL', '')==$this->url?'class="selected_page"':'' ?> 
                 href="<?php echo $this->url; ?>"><?php echo $this->link; ?></a>
             <?php $this->outputSubmenu(); ?>
         </li>

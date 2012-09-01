@@ -183,41 +183,7 @@ abstract class HTML extends \Moshpit\HttpChat {
     
     protected function getTitleBase() {
         return $this->titlebase;
-    }
-    
-    protected function setURL($url) {
-        $this->url = $url;
-    }
-    
-    protected function getURL() {
-        return $this->url;
-    }
-    
-    public function getValue(array $array, $value, $default=NULL, $exists=NULL) {
-        return Common::getValue($array, $value, $default, $exists);
-    }
-    
-    protected function forceSSL() {
-        if ($this->getValue(&$_SERVER, 'HTTPS', 'off') != 'on') 
-        {
-            $querystring = $this->getValue(&$_SERVER, 'QUERY_STRING'); 
-            if (strlen($querystring) > 0) 
-                $querystring = '?'.$querystring;
-            
-            throw new \Errors\Redirection('https://'.$_SERVER["HTTP_HOST"].$_SERVER['REDIRECT_URL'].$querystring);
-        }
-    }
-    
-    protected function forceNonSSL() {
-        if ($this->getValue(&$_SERVER, 'HTTPS', 'off') != 'off') 
-        {
-            $querystring = $this->getValue(&$_SERVER, 'QUERY_STRING'); 
-            if (strlen($querystring) > 0) 
-                $querystring = '?'.$querystring;
-            
-            throw new \Errors\Redirection('http://'.$_SERVER["HTTP_HOST"].$_SERVER['REDIRECT_URL'].$querystring);
-        }
-    }
+    } 
     
     protected function protectedArea($directory, $login) {
         if ($this->adminArea === NULL) $this->adminArea = $directory;

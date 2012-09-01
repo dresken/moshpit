@@ -4,7 +4,7 @@ set_include_path(
     //Skinner Library
     $docroot.'/_site/'
     //Symlink to MoshpitEngine version
-    .$docroot.'/_engine/'
+    .PATH_SEPARATOR.$docroot.'/_engine/'
     //Standard include path
     .PATH_SEPARATOR.get_include_path()
 );
@@ -12,8 +12,9 @@ set_include_path(
 spl_autoload_extensions(".class.php");
 spl_autoload_register();
 spl_autoload_register('\Errors\FourZeroFour::pageNotFound');
+spl_autoload_register('\Errors\GenericError::showerror');
 
-$url = \Site\Common::getValue($_SERVER, 'REDIRECT_URL', 'FourZeroFour.php');
+$url = \Moshpit\Common::getValue($_SERVER, 'REDIRECT_URL', 'FourZeroFour');
 //Generate a class name to execute from URL
 $class = 
     '\\Pages'.
@@ -27,8 +28,7 @@ $class =
                 )
             )
         )
-    )
-        ;                   
+    );
 
 try {
     $page = new $class();

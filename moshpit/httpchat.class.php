@@ -14,18 +14,31 @@ namespace Moshpit;
  * @package MoshpitEngine
  */
 abstract class HttpChat {
+    public static $HTTP  = 'http://';
+    public static $HTTPS = 'https://';
+
+    private $scheme;
     private $status;
     private $protocol;
     private $sent;
     private $headers;
+    private $contentType;
     
+    private $errors;
+
+
     /**
      * 
      * @param int $code
      */
-    public function __construct($status=200) {
+    public function __construct($status=200,$contentType="text/html") {
         $this->setStatus($status);
+        $this->setContentType($contentType);
         $this->setProtocol();
+        
+        $this->scheme = $this->getValue(&$_SERVER, 'HTTPS', self::$HTTP, self::$HTTPS);
+        
+        $this->errors = array();
         $this->headers = array();
         $this->sent = false;
     }
@@ -35,7 +48,16 @@ abstract class HttpChat {
      */
     public function __destruct() {
         //if we are closing down make sure we send
-        $this->send();
+        try {
+            $this->send();
+        } catch (\Exception $error) {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo $error->getMessage();
+        }
+    }
+    
+    public function getValue(array $array, $value, $default=NULL, $exists=NULL) {
+        return Common::getValue($array, $value, $default, $exists);
     }
     
     /**
@@ -46,8 +68,9 @@ abstract class HttpChat {
     final public function send() {
         //you can only send a responce once
         if (!$this->sent) {
-            $this->addHeaders($this->getProtocol() . ' ' . $this->getCode() . ' ' . $this->getCodeText());
-            foreach($this->getHeaderss() as $header)
+            $this->addHeader($this->getProtocol() . ' ' . $this->getStatus() . ' ' . $this->getStatusText());
+            $this->addHeader('Content-Type:'.$this->getContentType());
+            foreach($this->getHeaders() as $header)
                 header($header);
             $this->outputContent();
             $this->sent = TRUE;
@@ -70,7 +93,7 @@ abstract class HttpChat {
      * 
      * @return array
      */
-    final protected function getHeader() {
+    final protected function getHeaders() {
         return $this->headers;
     }
     
@@ -96,6 +119,15 @@ abstract class HttpChat {
     final public function getStatus() {
         return $this->status;
     }
+    
+    final public function setContentType($contentType) {
+        $this->contentType = $contentType;
+    }
+    
+    final public function getContentType() {
+        return $this->contentType;
+    }
+    
     
     /**
      * 
@@ -131,8 +163,8 @@ abstract class HttpChat {
      * @return string
      * @throws Exception
      */
-    final public function getCodeText() {
-        $code = $this->getCode();
+    final public function getStatusText() {
+        $code = $this->getStatus();
         $protocol = $this->getProtocol();
         
         switch ($code) {
@@ -183,14 +215,16 @@ abstract class HttpChat {
                         case 302: $text = 'Found'; break;
                         case 307: $text = 'Temporary Redirect'; break;
                         default:
-                            throw new Exception('Unknown http status code "' . htmlentities($code) . '"');
+                            throw new \Exception('Unknown http status code "' . htmlentities($code) . '"');
+                            //$text = "Unknown";
                             break;
                     }
                 } elseif ($protocol=='HTTP/1.0') {
                     switch ($code) {
                         case 302: $text = 'Moved Temporarily'; break;
                         default:
-                            throw new Exception('Unknown http status code "' . htmlentities($code) . '"');
+                            throw new \Exception('Unknown http status code "' . htmlentities($code) . '"');
+                            //$text = "Unknown";
                             break;
                     }
                 }
@@ -212,6 +246,50 @@ abstract class HttpChat {
            | "502"   ; Bad Gateway
            | "503"   ; Service Unavailable
          */
+    }
+    
+    protected function setURL($url) {
+        $this->url = $url;
+    }
+    
+    protected function getURL() {
+        return $this->url;
+    }
+    
+    private function forceScheme($scheme) {
+        if ($this->scheme != $scheme) {
+            $querystring = $this->getValue(&$_SERVER, 'QUERY_STRING'); 
+            if (strlen($querystring) > 0) 
+                $querystring = '?'.$querystring;
+            
+            throw new \Errors\Redirection($scheme.$_SERVER["HTTP_HOST"].$_SERVER['REDIRECT_URL'].$querystring);
+        }
+    }
+    
+    final protected function forceSSL() {
+        $this->forceScheme(self::$HTTPS);
+    }
+    
+    final protected function forceNonSSL() {
+        $this->forceScheme(self::$HTTP);
+    }
+    
+    final protected function addError($errors) {
+        if (!is_array($errors))
+            $errors = array($errors);
+        
+        foreach ($errors as $error) {
+            $this->errors[] = $error;
+        }
+    }
+    
+    protected function outputErrors() {
+        if (count($this->errors) > 0) {
+            echo "Errors:\n";
+            foreach($this->errors as $error)
+                echo $error."\n"; 
+        }
+        $this->errors = array();
     }
 }
 ?>

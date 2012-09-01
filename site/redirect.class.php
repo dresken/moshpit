@@ -12,7 +12,7 @@
  */
 namespace Site;
 
-class Redirect extends \Connex\MoshHttp {
+class Redirect extends \Moshpit\HttpChat {
     
     private $location;
     
@@ -20,7 +20,7 @@ class Redirect extends \Connex\MoshHttp {
         //validate $code as redircetion
         parent::__construct($code);
         $this->setLocation($location);
-        $this->addHeaders("Location: $this->location");
+        $this->addHeader("Location: $this->location");
     }
     
     public function setLocation($location) {
@@ -35,9 +35,9 @@ class Redirect extends \Connex\MoshHttp {
 ?>
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
 <html><head>
-<title><?php echo $this->getCode()." ".$this->getCodeText() ?></title>
+<title><?php echo $this->getStatus()." ".$this->getCodeText() ?></title>
 </head><body>
-<h1><?php echo $this->getCodeText() ?></h1>
+<h1><?php echo $this->getStatusText() ?></h1>
 <p>The document has moved <a href="<?php echo $this->getLocation() ?>">here</a>.</p>
 </body></html>
 <?php

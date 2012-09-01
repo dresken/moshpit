@@ -3,13 +3,18 @@ namespace Errors;
 class FourZeroFour extends \Skeleton {
     private $page;
     public function __construct($page=null) {
-        $this->page = $page;
+        $this->page = 
+            preg_replace('|__|', '.', 
+                preg_replace('|^Pages\\\\|', '', $page)
+            );
         parent::__construct('Page Not Found');
-        $this->setCode(404);
+        $this->setStatus(404);
     }
 
     public static function pageNotFound($page) {
-        return new FourZeroFour($page);
+        if (preg_match('|^Pages\\\\|', $page)) {
+            return new FourZeroFour($page);
+        }
     }
 
     public function outputMainColumn() {

@@ -4,7 +4,7 @@
  *
  * @author aaron
  */
-namespace Site;
+namespace Moshpit;
 
 final class Common {
     /**

@@ -1,5 +1,5 @@
 <?php
-namespace Site;
+namespace Moshpit;
 class Admin {
     private $username;
     private $login;

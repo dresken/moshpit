@@ -18,12 +18,12 @@ abstract class Form {
         $this->setMethod($method);
         $this->setAction($action);
         
-        if (\Site\Common::getValue($_SERVER,'REQUEST_METHOD') == 'POST' 
+        if (\Moshpit\Common::getValue($_SERVER,'REQUEST_METHOD') == 'POST' 
                 && empty($_POST) 
-                && \Site\Common::getValue($_SERVER,'CONTENT_LENGTH',0) > 0
+                && \Moshpit\Common::getValue($_SERVER,'CONTENT_LENGTH',0) > 0
         ) {
             $this->addError('The server was unable to handle that much POST data ('
-                    .\Site\Common::getValue($_SERVER,'CONTENT_LENGTH',0)
+                    .\Moshpit\Common::getValue($_SERVER,'CONTENT_LENGTH',0)
                     .' bytes) due to its current configuration');
         }
         
@@ -69,7 +69,7 @@ abstract class Form {
             $array = $_REQUEST;
         }
         
-        return \Site\Common::getValue($array, $value, $default, $exists);
+        return \Moshpit\Common::getValue($array, $value, $default, $exists);
     }
 
     final public function addError($errors) {
