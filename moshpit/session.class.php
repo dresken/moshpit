@@ -31,7 +31,7 @@ final class Session {
     }*/
     
     public function get($key, $default='') {
-        return Common::getValue(&$_SESSION, $key, $default);
+        return Common::getValue($_SESSION, $key, $default);
     }
 }
 

@@ -15,7 +15,11 @@ class DB {
     
     public function __construct(array $db_creds,$db_server='localhost',$db_name=null) {
         if (null === $db_name) {
-            $db_name = str_replace(".", "_", preg_replace("/^www\./", "", $_SERVER["SERVER_NAME"]));
+            $db_name = str_replace(".", "_",                                    // replace . with _
+                    preg_replace('|^d\.|', 'dev.',                              // replace d. with dev.
+                        preg_replace("/^www\./", "", $_SERVER["SERVER_NAME"])   // remove www.
+                    )
+                );
         }
         $this->db_server = $db_server;
         $this->db_user = $db_creds['username'];
@@ -35,7 +39,7 @@ class DB {
                 $errno=$this->mysqli->connect_errno;
                 $error=$this->mysqli->connect_error;
                 $this->mysqli = NULL;
-                throw new Exception ('Connect Error (' . $errno . ') '.$error);
+                throw new \Exception ('Connect Error (' . $errno . ') '.$error);
             }
         }
         return $this->mysqli;
@@ -58,7 +62,7 @@ class DB {
         $db = $this->getConnection();
         $result = $db->query($sql);
         if (!$result) 
-            throw new Exception('Invalid query: ' . $db->error . '('.$db->errno.') for "'.$sql.'"');
+            throw new \Exception('Invalid query: ' . $db->error . '('.$db->errno.') for "'.$sql.'"');
         return $result;
     }
     
@@ -68,7 +72,11 @@ class DB {
      * @return type 
      */
     public function prepare($sql) {
-        return $this->getConnection()->prepare($sql);
+        $db = $this->getConnection();
+        $stmt = $db->prepare($sql);
+        if (!$stmt) 
+            throw new \Exception('Invalid query: ' . $db->error . '('.$db->errno.') for "'.$sql.'"');
+        return $stmt;
     }
     
     public static function generateStatements($table, array $columns, array $where, array $selectallwhere=NULL, $orderby="", $limit="") {

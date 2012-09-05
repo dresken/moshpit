@@ -16,7 +16,11 @@ class GenericError extends \Skeleton {
     public function outputMainColumn() {
         ?>
             <p>Generic Error</p>
-            <?php echo $this->error->getMessage() ?>
+            <?php echo $this->error->getMessage()."<br/><pre>";
+            echo $this->error->getTraceAsString();
+ var_dump($this->error);
+            echo "</pre>";
+                    ?>
 <?php
     }
 }

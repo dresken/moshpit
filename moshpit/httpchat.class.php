@@ -166,7 +166,7 @@ abstract class HttpChat {
     final public function getStatusText() {
         $code = $this->getStatus();
         $protocol = $this->getProtocol();
-        
+        $text = 'Unknown';
         switch ($code) {
             
             case 200: $text = 'OK'; break;
@@ -227,6 +227,8 @@ abstract class HttpChat {
                             //$text = "Unknown";
                             break;
                     }
+                } else {
+                    throw new \Exception('Unknown http protocol code "' . htmlentities($protocol) . '"');
                 }
                 
             }

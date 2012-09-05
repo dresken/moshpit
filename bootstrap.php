@@ -8,13 +8,18 @@ set_include_path(
     //Standard include path
     .PATH_SEPARATOR.get_include_path()
 );
-
 spl_autoload_extensions(".class.php");
 spl_autoload_register();
 spl_autoload_register('\Errors\FourZeroFour::pageNotFound');
 spl_autoload_register('\Errors\GenericError::showerror');
 
+/** /function exception_error_handler($errno, $errstr, $errfile, $errline ) {
+    throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
+}
+set_error_handler("exception_error_handler");
+/**/
 $url = \Moshpit\Common::getValue($_SERVER, 'REDIRECT_URL', 'FourZeroFour');
+//echo $url;
 //Generate a class name to execute from URL
 $class = 
     '\\Pages'.
@@ -29,12 +34,13 @@ $class =
             )
         )
     );
-
+//echo $class;
+//exit();
 try {
     $page = new $class();
 } catch (\Errors\Redirection $redirection) {
     $redirection->redirect();
-} catch (Exception $error) {
+} catch (\Exception $error) {
     $page = new \Errors\GenericError($error);
 }
 ?>
