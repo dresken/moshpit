@@ -23,8 +23,9 @@ abstract class Bones extends \Moshpit\HttpChat {
         $this->errors = array();
         $this->titlebase = $titlebase;
         
-        $this->addHead('<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />');
-        $this->addHead('<meta name="Author" content="Aaron Roots" />');
+        $this->addHead('<meta charset="utf-8">');
+        $this->addHead('<meta name="description" content="">');
+        $this->addHead('<meta name="viewport" content="width=device-width">');
     }
     
     final protected function addHead($header) {
@@ -32,7 +33,9 @@ abstract class Bones extends \Moshpit\HttpChat {
     }
     
     protected function getHead() {
-        return $this->head;
+        $head = $this->head;
+        array_splice($head,1,0,'<title>'.$this->getTitle().'</title>');
+        return $head;
     }
     
     final protected function setMenu(&$menu) {
