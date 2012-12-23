@@ -13,18 +13,16 @@ class Redirection extends \Exception
 {
     private $location;
     private $response_code;
-    private $http_version;
     
-    public function __construct($location, $message=null, $code = 0, \Exception $previous = null) {
+    public function __construct($location, $response_code=302, $message=null, $code = 0, \Exception $previous = null) {
         $this->location = $location;
-        $this->response_code = 302;
-        $this->http_version = 1.0;
+        $this->response_code = $response_code;
         parent::__construct($message, $code, $previous);
     }
 
     // custom string representation of object
     public function __toString() {
-        return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
+        return __CLASS__ . ": [{$this->code}]: {$this->message}. $this->response_code to $this->location\n";
     }
 
     /**
