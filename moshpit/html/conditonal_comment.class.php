@@ -10,10 +10,13 @@ class Conditonal_Comment extends Comment {
     
     public function __construct($conditonal,$commented=NULL,$exposed=FALSE) {
         parent::__construct($commented);
-        
+        $this->setConditional($conditonal);
+        $this->setExposed($exposed);
         $this->addChild($commented);
     }
-    
+    public function setConditional($conditonal) {
+        $this->conditional = $conditonal;
+    }
     public function setExposed($exposed=TRUE) {
         $this->exposed = $exposed;
     }
