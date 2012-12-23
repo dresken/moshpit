@@ -33,8 +33,21 @@ abstract class HTML extends \Moshpit\HttpChat {
     final protected function getBody() {
         return $this->body;
     }
+
+    /**
+     * 
+     * @return \Moshpit\Html\Element
+     */
+    final protected function getHead() {
+        return $this->head;
+    }
+    
+    abstract protected function outputBody();
+    abstract protected function outputHead();
     
     protected function outputContent() {
+        $this->getHead()->addChild($this->outputHead());
+        $this->getBody()->addChild($this->outputBody());
         $this->outputDocType();
         $this->html->outputElement();
     }
