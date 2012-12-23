@@ -24,6 +24,9 @@ final class Session {
         $_SESSION[$key] = $value;
     }
     
+    public function clear($key) {
+        if (isset($_SESSION[$key])) unset($_SESSION[$key]);
+    }
     /*public function set(array $array) {
         foreach ($array as $key => $value) {
             $this->set($key, $value);
