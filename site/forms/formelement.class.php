@@ -5,15 +5,18 @@ class FormElement {
     private $id;
     private $label;
     private $value;
+    private $attributes;
     
     private $options;
     private $selected;
-    
+        
     public function __construct($type, $id, &$value, $label="&nbsp;") {
         $this->type     = $type;
         $this->id       = $id;
         $this->value    = $value;
         $this->label    = $label;
+        
+        $this->attributes = array();
         
         $this->options = array();
         $this->selected = "";
@@ -45,6 +48,13 @@ class FormElement {
         
         return Common::getValue($array, $value, $default, $exists);
     }*/
+    final public function addAttribute($attribute,$value=NULL) {
+        if ($this->attributes[$attribute]) {
+            throw new Exception("Attribute $attribute already exists with value: $this->options[$attribute]");
+        }
+        if (!$value) { $value = $attribute; }
+        $this->attributes[$attribute] = $value;
+    }
     
     final public function outputInput(){
     ?>
