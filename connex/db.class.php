@@ -13,18 +13,11 @@ class DB {
     
     private $mysqli;
     
-    public function __construct(array $db_creds,$db_server='localhost',$db_name=null) {
-        if (null === $db_name) {
-            $db_name = str_replace(".", "_",                                    // replace . with _
-                    preg_replace('|^d\.|', 'dev.',                              // replace d. with dev.
-                        preg_replace("/^www\./", "", $_SERVER["SERVER_NAME"])   // remove www.
-                    )
-                );
-        }
-        $this->db_server = $db_server;
-        $this->db_user = $db_creds['username'];
-        $this->db_password = $db_creds['password'];
-        $this->db_name = $db_name;
+    public function __construct($db_creds) {
+        $this->db_server    = $db_creds->server;
+        $this->db_user      = $db_creds->username;
+        $this->db_password  = $db_creds->password;
+        $this->db_name      = $db_creds->database;
     }
     
     /**

@@ -6,8 +6,8 @@ abstract class FormDB extends Form {
     
     
 
-    public function __construct($id_feild = 'id', $method="POST",$action=NULL) {
-        $this->db = new \Connex\DB(\Config::getDBCreds());
+    public function __construct($db_creds, $id_feild = 'id', $method="POST",$action=NULL) {
+        $this->db = new \Connex\DB($db_creds);
         $this->sql = $this->generateStatements();
         
         
