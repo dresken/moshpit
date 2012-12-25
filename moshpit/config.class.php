@@ -30,6 +30,13 @@ final class Config {
         return NULL;
     }
     
+    //TODO: Make config not require a require
+    public function load($filename) {
+        $config = $this;
+        require "$filename";
+        return $config;
+    }
+    
 
 }
 ?>
