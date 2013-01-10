@@ -5,19 +5,60 @@
  * @author aaron
  */
 namespace Connex;
-class DB {
-    private $db_server;
-    private $db_user;
-    private $db_password;
-    private $db_name;
+class DB extends \PDO {
+    private static $_dbh;
     
-    private $mysqli;
+    public static function getConnection($creds=NULL) {
+        if(!isset(self::$_dbh)) {
+            if ($creds === NULL)
+                throw new Exception("Database credentials must be passed on first access");
+            self::$_dbh = new DB($creds);
+        }
+        return self::$_dbh;
+    }
+    
+    private $server;
+    private $username;
+    private $password;
+    private $database;
+    private $driver;
+    /*
+ PHP Fatal error:  Uncaught exception 'PDOException' with message 'could not find driver' 
+     in /var/www/html/MoshpitEngine/current/connex/db.class.php:36
+     * Stack trace:
+     * #0 /var/www/html/MoshpitEngine/current/connex/db.class.php(36): 
+     *   PDO->__construct(':host=;dbname=', '', '')
+     * #1 /var/www/html/MoshpitEngine/current/connex/db.class.php(15): 
+     *   Connex\\DB->__construct(Object(Moshpit\\Config))
+     * #2 /var/www/html/MoshpitEngine/current/site/bones.class.php(42): 
+     *   Connex\\DB::getConnection(Object(Moshpit\\Config))
+     * #3 /var/www/html/dev.elswh.re/_site/skeleton.class.php(4): 
+     *   Site\\Bones->__construct('elswh.re', 'elsewheREdirect...', NULL)
+     * #4 /var/www/html/MoshpitEngine/current/errors/genericerror.class.php(6):
+     *   Skeleton->__construct('Error')
+     * #5 /var/www/html/MoshpitEngine/current/bootstrap.php(44):
+     *   Errors\\GenericError->__construct(Object(Exception))
+     * #6 {main}
+     * 
+     * Next exception 'Exception' with message 'mysql, sqlite' in /var/www/html/MoshpitEngine/current/connex/db.class.php:42\nStack trace:\n#0 /var/www/html/MoshpitEngine/current/connex/db.class.php(15): Con in /var/www/html/MoshpitEngine/current/connex/db.class.php on line 42
+*/
+    
     
     public function __construct($db_creds) {
-        $this->db_server    = $db_creds->server;
-        $this->db_user      = $db_creds->username;
-        $this->db_password  = $db_creds->password;
-        $this->db_name      = $db_creds->database;
+        $this->server    = $db_creds->server;
+        $this->username  = $db_creds->username;
+        $this->password  = $db_creds->password;
+        $this->database  = $db_creds->database;
+        $this->driver    = $db_creds->driver;
+        try {
+            parent::__construct($this->driver.':host='.$this->server.';dbname='.$this->database,$this->username,$this->password);
+            $this->setAttribute(self::ATTR_ERRMODE, self::ERRMODE_EXCEPTION);
+            //Use Buffered query for MySQL?
+            if ($this->driver == 'mysql')
+                $this->setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, TRUE);
+        } catch (\Exception $e) {
+            throw new \Exception(implode(", ", self::getAvailableDrivers()),0,$e);
+        }
     }
     
     /**
@@ -25,24 +66,14 @@ class DB {
      * @return mysqli
      * @throws Exception 
      */
-    public function getConnection() {
-        if (null === $this->mysqli) {
-            $this->mysqli = new \mysqli($this->db_server, $this->db_user, $this->db_password, $this->db_name);
-            if ($this->mysqli->connect_error) {
-                $errno=$this->mysqli->connect_errno;
-                $error=$this->mysqli->connect_error;
-                $this->mysqli = NULL;
-                throw new \Exception ('Connect Error (' . $errno . ') '.$error);
-            }
-        }
-        return $this->mysqli;
+    
+    
+    protected static function getCredsID($db_creds) {
+        return $db_creds->driver.":".$db_creds->server.":".$db_creds->database.":".$db_creds->username;
     }
     
     public function __destruct() {
-        if (null !== $this->mysqli) {
-            $this->mysqli->close();
-            $this->mysqli = null;
-        }
+        //$this->close();
     }
     
     /**
@@ -50,7 +81,7 @@ class DB {
      * @param type $sql
      * @return type
      * @throws Exception 
-     */
+     * /
     public function execute($sql) {
         $db = $this->getConnection();
         $result = $db->query($sql);
@@ -63,32 +94,13 @@ class DB {
      *
      * @param type $sql
      * @return type 
-     */
+     * /
     public function prepare($sql) {
         $db = $this->getConnection();
         $stmt = $db->prepare($sql);
         if (!$stmt) 
             throw new \Exception('Invalid query: ' . $db->error . '('.$db->errno.') for "'.$sql.'"');
         return $stmt;
-    }
-    
-    public static function generateStatements($table, array $columns, array $where, array $selectallwhere=NULL, $orderby="", $limit="") {
-        if ($orderby != "") 
-            $orderby = "ORDER BY `".$orderby."`";
-        
-        $sql = array(
-        'INSERT' => 'INSERT INTO '.$table.' (`'.implode('`, `', $columns).'`) VALUES ('.str_repeat('?, ',count($columns)-1).'?);',
-        'SELECT' => 'SELECT '.implode(', ', $where).', `'.implode('`, `', $columns).'` FROM '.$table.' WHERE `'.implode('` = ? AND `', $where).'` = ?;',
-        'UPDATE' => 'UPDATE '.$table.' SET `'.implode('`=?, `', $columns).'`=? WHERE `'.implode('` = ? AND `', $where).'` = ?;',
-        'DELETE' => 'DELETE FROM '.$table.' WHERE `'.implode('` = ? AND `', $where).'` = ?;',
-        'SELECT_ALL' => 'SELECT `'.implode('`, `', $where).'`, `'.implode('`, `', $columns)
-            .'` FROM '.$table
-            .($selectallwhere?' WHERE `'.implode('` = ? AND `', $selectallwhere).'` = ? ':' ')
-            .$orderby.' '.$limit.';',
-        '' => ''
-        );
-        return $sql;
-    }
+    }/**/
 }
-
 ?>

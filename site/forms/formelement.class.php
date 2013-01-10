@@ -7,10 +7,12 @@ class FormElement {
     private $value;
     private $attributes;
     
+    private $helptip;
+    
     private $options;
     private $selected;
         
-    public function __construct($type, $id, &$value, $label="&nbsp;") {
+    public function __construct($type, $id, $value, $label="&nbsp;") {
         $this->type     = $type;
         $this->id       = $id;
         $this->value    = $value;
@@ -49,11 +51,15 @@ class FormElement {
         return Common::getValue($array, $value, $default, $exists);
     }*/
     final public function addAttribute($attribute,$value=NULL) {
-        if ($this->attributes[$attribute]) {
-            throw new Exception("Attribute $attribute already exists with value: $this->options[$attribute]");
+        if (array_key_exists($attribute, $this->attributes)) {
+            throw new Exception("Attribute $attribute already exists with value: $this->attributes[$attribute]");
         }
         if (!$value) { $value = $attribute; }
         $this->attributes[$attribute] = $value;
+    }
+    
+    final public function addHelpTip($helptip) {
+        $this->helptip = $helptip;
     }
     
     final public function outputInput(){
@@ -69,7 +75,7 @@ class FormElement {
                         echo $this->id; 
                     ?>" name="<?php 
                         echo $this->id; 
-                    ?>"><?php 
+                    ?>"<?php foreach ($this->attributes as $attribute => $value) echo " $attribute=\"$value\""; ?>><?php 
                         echo $this->value;
                     ?></<?php 
                         echo $this->type; 
@@ -85,7 +91,7 @@ class FormElement {
                         echo $this->id; 
                     ?>" <?php 
                         echo $this->value?'checked="checked"':'';
-                    ?> />
+                    ?><?php foreach ($this->attributes as $attribute => $value) echo " $attribute=\"$value\""; ?> />
                 <?php
                 break;
             case 'select':?>
@@ -95,7 +101,7 @@ class FormElement {
                         echo $this->id; 
                     ?>" name="<?php 
                         echo $this->id; 
-                    ?>">
+                    ?>"<?php foreach ($this->attributes as $attribute => $value) echo " $attribute=\"$value\""; ?>>
                         <?php foreach ($this->options as $value => $display) :
                             ?><option <?php
                                 if ($this->selected == $value) { echo 'selected="selected" '; } 
@@ -104,6 +110,16 @@ class FormElement {
                     </<?php 
                         echo $this->type; 
                     ?>>
+                    <?php 
+                break;
+            case 'info':?>
+                    <p class="<?php 
+                        echo $this->type; 
+                    ?>" id="<?php
+                        echo $this->id; 
+                    ?>"<?php foreach ($this->attributes as $attribute => $value) echo " $attribute=\"$value\""; ?>><?php 
+                        echo $this->value;
+                    ?></p>
                     <?php 
                 break;
             default:?>
@@ -115,10 +131,17 @@ class FormElement {
                         echo $this->id; 
                     ?>" <?php 
                         echo $this->value?'value="'.$this->value.'"':'';
-                    ?> />
+                    ?><?php foreach ($this->attributes as $attribute => $value) echo " $attribute=\"$value\""; ?> />
                 <?php
                 break;
-        }?>
+        }
+        
+        if ($this->helptip) {
+            ?><div class="helptip" style="font-size: small;color: grey;"><?php
+                echo $this->helptip;
+            ?></div><?php
+        }
+        ?>
         </div>
     <?php
     }

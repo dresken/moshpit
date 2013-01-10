@@ -24,7 +24,7 @@ abstract class HttpChat {
     private $headers;
     private $contentType;
     
-    private $errors;
+    protected $errors;
 
 
     /**
@@ -283,6 +283,10 @@ abstract class HttpChat {
         foreach ($errors as $error) {
             $this->errors[] = $error;
         }
+    }
+    
+    final protected function getErrors() {
+        return $this->errors;
     }
     
     protected function outputErrors() {

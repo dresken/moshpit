@@ -5,11 +5,11 @@ class Shibboleth extends RemoteUser {
     private $logouturl;
     private $targeturl;
     
-    public function __construct($loginurl='/Shibboleth.sso/Login', $logouturl='/Shibboleth.sso/Logout') {
-        parent::__construct();
+    public function __construct($checkAuth=FALSE, $loginurl='/Shibboleth.sso/Login', $logouturl='/Shibboleth.sso/Logout') {
         $this->loginurl = $loginurl;
         $this->logouturl = $logouturl;
         $this->targeturl = \Moshpit\Common::getValue($_SERVER, 'REDIRECT_URL', '/');
+        parent::__construct($checkAuth);
     }
     
     /**

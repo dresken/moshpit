@@ -1,8 +1,8 @@
 <?php
 namespace Moshpit\Auth;
 class RemoteUser extends Auth {
-    public function __construct() {
-        parent::__construct();
+    public function __construct($checkAuth=TRUE) {
+        parent::__construct($checkAuth);
     }
     
     /**

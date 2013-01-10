@@ -14,9 +14,15 @@ class Redirection extends \Exception
     private $location;
     private $response_code;
     
-    public function __construct($location, $response_code=302, $message=null, $code = 0, \Exception $previous = null) {
+    public function __construct($location, $response_code=302, $message=NULL, $code=0, \Exception $previous=NULL) {
         $this->location = $location;
         $this->response_code = $response_code;
+        
+        if ($message) {
+            $session = new \Moshpit\Session();
+            $session->set("redirect_error_message", $message, TRUE);
+        }
+        
         parent::__construct($message, $code, $previous);
     }
 

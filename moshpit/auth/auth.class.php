@@ -4,9 +4,11 @@ abstract class Auth {
     private $username;
     private $session;
     
-    public function __construct() {
-        $this->session = new Session();
+    public function __construct($checkAuth=FALSE) {
+        $this->session = new \Moshpit\Session();
         $this->username = $this->session->get('username');
+        if ($checkAuth && !$this->checkAuth())
+            $this->login();
     }
     
     final public function login() {
@@ -20,6 +22,8 @@ abstract class Auth {
     }
 
     final public function getUsername() {
+        if (!$this->checkAuth())
+            throw new \Exception("No user is authenticated");
         return $this->username;
     }
     

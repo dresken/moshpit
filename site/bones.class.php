@@ -7,25 +7,45 @@ abstract class Bones extends \Moshpit\HttpChat {
     private $head;
     private $title;
     private $titlebase;
-    private $errors;
     private $admin;
     private $isProd;
-    private $db;
     private $forms;
     private $adminArea;
     
-    public function __construct($titlebase='', $forceSSL=FALSE) {
+    //protected $config;
+    
+    public function __construct($url='', $titlebase='', $forceSSL=NULL) {
+        $this->setURL($url);
+        if ($this->isDev()) error_reporting (E_ALL | E_STRICT);
         parent::__construct();
-        if ($forceSSL) $this->forceSSL(); else $this->forceNonSSL();
+        if ($forceSSL === TRUE) $this->forceSSL(); elseif ($forceSSL === FALSE) $this->forceNonSSL();
+        
+        
         
         //$this->menu = array();
         $this->head = array();
-        $this->errors = array();
         $this->titlebase = $titlebase;
         
         $this->addHead('<meta charset="utf-8">');
         $this->addHead('<meta name="description" content="">');
         $this->addHead('<meta name="viewport" content="width=device-width">');
+        
+        $config = \Moshpit\Config::Config($_SERVER['DOCUMENT_ROOT'].'/_config/config2.php');
+        echo '<pre>';
+        var_dump($config);// $config;
+        echo '</pre>';
+        //exit();
+        //$this->config->load($_SERVER['DOCUMENT_ROOT'].'/_config/config.php');
+        //$this->config->load2($_SERVER['DOCUMENT_ROOT'].'/_config/config_1.php');
+
+        //if (isset($this->config->database))
+            \Connex\DB::getConnection(\Moshpit\Config::Config()->database);
+            
+        $session = new \Moshpit\Session();
+        
+        $this->addError($session->get("redirect_error_message"));
+        //var_dump($this->errors);
+        
     }
     
     final protected function addHead($header) {
@@ -146,22 +166,14 @@ abstract class Bones extends \Moshpit\HttpChat {
     
     /**
      *
-     * @return Admin 
+     * @return \Moshpit\Auth\Auth 
      */
     protected function getAdmin() {
         if (null === $this->admin)
-            $this->admin = new \Moshpit\Admin();
+            $class = \Moshpit\Config::Config()->authtype;
+            $this->admin = new $class();
+        
         return $this->admin;
-    }
-    
-    /**
-     *
-     * @return DB 
-     */
-    protected function getDB() {
-        if (null === $this->db)
-            $this->db = new \Connex\DB(\Config::getDBCreds());
-        return $this->db;
     }
     
     protected function setTitle($title="", $overwrite = FALSE) {

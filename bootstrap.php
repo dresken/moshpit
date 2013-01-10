@@ -41,6 +41,13 @@ try {
 } catch (\Errors\Redirection $redirection) {
     $redirection->redirect();
 } catch (\Exception $error) {
-    $page = new \Errors\GenericError($error);
+    try {
+        //try to display a nice error page
+        $page = new \Errors\GenericError($error);
+    } catch (\Exception $error) {
+        // That may fail if there is a major problem with MoshpitEngine core
+        // So just display a plain one
+        echo '<h2>Major Error</h2><p><a href="https://github.com/dresken/moshpit/issues">Please log a bug with MoshpitEngine</a></p><pre>'.$error->getMessage().'</pre>';
+    }
 }
 ?>
