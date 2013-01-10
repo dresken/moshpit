@@ -21,8 +21,7 @@ class DB extends \PDO {
     private $username;
     private $password;
     private $database;
-    private $driver;
-    
+    private $driver;    
     
     public function __construct($db_creds) {
         $this->server    = $db_creds->server;

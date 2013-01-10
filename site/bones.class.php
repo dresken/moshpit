@@ -29,7 +29,7 @@ abstract class Bones extends \Moshpit\HttpChat {
         $this->addHead('<meta charset="utf-8">');
         $this->addHead('<meta name="description" content="">');
         $this->addHead('<meta name="viewport" content="width=device-width">');
-        
+
         //initialise Config
         \Moshpit\Config::Config($_SERVER['DOCUMENT_ROOT'].'/_config/config.php');
 
