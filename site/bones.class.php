@@ -12,9 +12,15 @@ abstract class Bones extends \Moshpit\HttpChat {
     private $forms;
     private $adminArea;
     
-    public function __construct($titlebase='', $forceSSL=FALSE) {
+    //protected $config;
+    
+    public function __construct($url='', $titlebase='', $forceSSL=NULL) {
+        $this->setURL($url);
+        if ($this->isDev()) error_reporting (E_ALL | E_STRICT);
         parent::__construct();
-        if ($forceSSL) $this->forceSSL(); else $this->forceNonSSL();
+        if ($forceSSL === TRUE) $this->forceSSL(); elseif ($forceSSL === FALSE) $this->forceNonSSL();
+        
+        
         
         //$this->menu = array();
         $this->head = array();
@@ -23,6 +29,13 @@ abstract class Bones extends \Moshpit\HttpChat {
         $this->addHead('<meta charset="utf-8">');
         $this->addHead('<meta name="description" content="">');
         $this->addHead('<meta name="viewport" content="width=device-width">');
+        
+        //initialise Config
+        \Moshpit\Config::Config($_SERVER['DOCUMENT_ROOT'].'/_config/config.php');
+
+        if (isset($this->config->database))
+            \Connex\DB::getConnection(\Moshpit\Config::Config()->database);
+            
         $session = new \Moshpit\Session();
         
         $this->addError($session->get("redirect_error_message"));
@@ -146,11 +159,13 @@ abstract class Bones extends \Moshpit\HttpChat {
     
     /**
      *
-     * @return Admin 
+     * @return \Moshpit\Auth\Auth 
      */
     protected function getAdmin() {
         if (null === $this->admin)
-            $this->admin = new \Moshpit\Admin();
+            $class = \Moshpit\Config::Config()->authtype;
+            $this->admin = new $class();
+        
         return $this->admin;
     }
     
