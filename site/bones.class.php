@@ -7,7 +7,6 @@ abstract class Bones extends \Moshpit\HttpChat {
     private $head;
     private $title;
     private $titlebase;
-    private $errors;
     private $admin;
     private $isProd;
     private $forms;
@@ -19,7 +18,6 @@ abstract class Bones extends \Moshpit\HttpChat {
         
         //$this->menu = array();
         $this->head = array();
-        $this->errors = array();
         $this->titlebase = $titlebase;
         
         $this->addHead('<meta charset="utf-8">');
