@@ -10,7 +10,6 @@ abstract class Bones extends \Moshpit\HttpChat {
     private $errors;
     private $admin;
     private $isProd;
-    private $db;
     private $forms;
     private $adminArea;
     
@@ -152,16 +151,6 @@ abstract class Bones extends \Moshpit\HttpChat {
         if (null === $this->admin)
             $this->admin = new \Moshpit\Admin();
         return $this->admin;
-    }
-    
-    /**
-     *
-     * @return DB 
-     */
-    protected function getDB() {
-        if (null === $this->db)
-            $this->db = new \Connex\DB(\Config::getDBCreds());
-        return $this->db;
     }
     
     protected function setTitle($title="", $overwrite = FALSE) {
