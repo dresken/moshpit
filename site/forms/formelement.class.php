@@ -7,6 +7,8 @@ class FormElement {
     private $value;
     private $attributes;
     
+    private $helptip;
+    
     private $options;
     private $selected;
         
@@ -54,6 +56,10 @@ class FormElement {
         }
         if (!$value) { $value = $attribute; }
         $this->attributes[$attribute] = $value;
+    }
+    
+    final public function addHelpTip($helptip) {
+        $this->helptip = $helptip;
     }
     
     final public function outputInput(){
@@ -118,7 +124,14 @@ class FormElement {
                     ?> />
                 <?php
                 break;
-        }?>
+        }
+        
+        if ($this->helptip) {
+            ?><div class="helptip" style="font-size: small;color: grey;"><?php
+                echo $this->helptip;
+            ?></div><?php
+        }
+        ?>
         </div>
     <?php
     }
