@@ -112,6 +112,16 @@ class FormElement {
                     ?>>
                     <?php 
                 break;
+            case 'info':?>
+                    <p class="<?php 
+                        echo $this->type; 
+                    ?>" id="<?php
+                        echo $this->id; 
+                    ?>"<?php foreach ($this->attributes as $attribute => $value) echo " $attribute=\"$value\""; ?>><?php 
+                        echo $this->value;
+                    ?></p>
+                    <?php 
+                break;
             default:?>
                     <input type="<?php 
                         echo $this->type; 
