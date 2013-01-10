@@ -97,6 +97,17 @@ abstract class Form {
         $this->querystring = $querystring;
     }
     
+    public function vardump() {
+        echo '<pre>';
+        echo 'REQUEST:';
+        var_dump($_REQUEST);
+        echo 'POST:';
+        var_dump($_POST);
+        echo 'GET:';
+        var_dump($_GET);
+        echo '</pre>';
+    }
+    
     final public function outputForm() {
         $this->addFields();
     ?>
