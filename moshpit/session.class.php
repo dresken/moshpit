@@ -20,12 +20,25 @@ final class Session {
         session_destroy();
     }
     
-    public function set($key, $value) {
+    private function selfdestruct($key) {
+        if (!isset($_SESSION['selfdestruct'])) {
+            $_SESSION['selfdestruct'] = array();
+        }
+        $_SESSION['selfdestruct'][$key] = TRUE;
+    }
+    
+    public function set($key, $value, $selfdestruct=FALSE) {
         $_SESSION[$key] = $value;
+        if ($selfdestruct) 
+            $this->selfdestruct($key);
     }
     
     public function clear($key) {
-        if (isset($_SESSION[$key])) unset($_SESSION[$key]);
+        if (isset($_SESSION[$key])) 
+            unset($_SESSION[$key]);
+        
+        if (isset($_SESSION['selfdestruct'][$key])) 
+            unset($_SESSION['selfdestruct'][$key]);
     }
     /*public function set(array $array) {
         foreach ($array as $key => $value) {
@@ -34,7 +47,10 @@ final class Session {
     }*/
     
     public function get($key, $default='') {
-        return Common::getValue($_SESSION, $key, $default);
+        $result = Common::getValue($_SESSION, $key, $default);
+        if (isset($_SESSION['selfdestruct'][$key])) 
+            $this->clear($key);
+        return $result;
     }
 }
 

@@ -23,6 +23,9 @@ abstract class Bones extends \Moshpit\HttpChat {
         $this->addHead('<meta charset="utf-8">');
         $this->addHead('<meta name="description" content="">');
         $this->addHead('<meta name="viewport" content="width=device-width">');
+        $session = new \Moshpit\Session();
+        
+        $this->addError($session->get("redirect_error_message"));
     }
     
     final protected function addHead($header) {
