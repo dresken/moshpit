@@ -124,26 +124,29 @@ abstract class Form {
     <?php
     }
     
-    public function addField($type, $id, &$value, $label="&nbsp;") { 
-        $formelement = new FormElement($type, $id, &$value, $label);
+    public function addField($type, $id, $value, $label="&nbsp;") { 
+        $formelement = new FormElement($type, $id, $value, $label);
         $this->formElements[] = $formelement;
         return $formelement;
     }
+    
+    /* *
+     * 
+     * @param \Site\Forms\FormElement $formelement
+     * @return \Site\Forms\FormElement
+     * /
+    public function addField(\Site\Forms\FormElement $formelement) {
+        if (array_key_exists($formelement->getId(), $formelement))
+            throw new Exception("FormElement with id (".$formelement->getId().") already exists");
+        $this->formElements[$formelement->getId()] = $formelement;
+        return $formelement;
+    }/**/
     
     abstract protected function addFields();
     
     public function viewForm() {
         foreach($this->formElements as $formElements)
                     $formElements->outputInput(); 
-    }
-    
-    final public function addInput($type, $id, $value, $label="&nbsp;") {
-    ?>
-        <div class="form_element">
-            <label for="<?php echo $id; ?>"><?php echo $label; ?></label>
-            <input type="<?php echo $type; ?>" id="<?php echo $id; ?>" name="<?php echo $id; ?>" <?php echo $value?'value="'.$value.'"':'';?> />
-        </div>
-    <?php
     }
 }
     
