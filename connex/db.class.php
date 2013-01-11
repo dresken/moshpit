@@ -11,7 +11,7 @@ class DB extends \PDO {
     public static function getConnection($creds=NULL) {
         if(!isset(self::$_dbh)) {
             if ($creds === NULL)
-                throw new Exception("Database credentials must be passed on first access");
+                throw new \Exception("Database credentials must be passed on first access");
             self::$_dbh = new DB($creds);
         }
         return self::$_dbh;
