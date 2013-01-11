@@ -44,10 +44,12 @@ try {
     try {
         //try to display a nice error page
         $page = new \Errors\GenericError($error);
-    } catch (\Exception $error) {
+    } catch (\Exception $error2) {
         // That may fail if there is a major problem with MoshpitEngine core
         // So just display a plain one
-        echo '<h2>Major Error</h2><p><a href="https://github.com/dresken/moshpit/issues">Please log a bug with MoshpitEngine</a></p><pre>'.$error->getMessage().'</pre>';
+        echo '<h2>Major Error</h2><p><a href="https://github.com/dresken/moshpit/issues">Please log a bug with MoshpitEngine</a></p><h2>Original Error:</h2><pre>'
+        .$error->getMessage()."\n".$error->getTraceAsString().'</pre><h2>Secondary Error:</h2><pre>'
+        .$error2->getMessage()."\n".$error2->getTraceAsString().'</pre>';
     }
 }
 ?>
