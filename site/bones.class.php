@@ -32,8 +32,8 @@ abstract class Bones extends \Moshpit\HttpChat {
 
         //initialise Config
         \Moshpit\Config::Config($_SERVER['DOCUMENT_ROOT'].'/_config/config.php');
-
-        if (isset($this->config->database))
+        
+        if (NULL !== \Moshpit\Config::Config()->database)
             \Connex\DB::getConnection(\Moshpit\Config::Config()->database);
             
         $session = new \Moshpit\Session();
@@ -162,10 +162,13 @@ abstract class Bones extends \Moshpit\HttpChat {
      * @return \Moshpit\Auth\Auth 
      */
     protected function getAdmin() {
-        if (null === $this->admin)
-            $class = \Moshpit\Config::Config()->authtype;
-            $this->admin = new $class();
-        
+        if (null === $this->admin) {
+            $authtype = \Moshpit\Config::Config()->authtype;
+            if (null === $authtype) {
+                throw new \Exception("Configuration for authtype is NULL");
+            }
+            $this->admin = new $authtype();
+        }
         return $this->admin;
     }
     
